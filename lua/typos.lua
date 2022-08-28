@@ -2,17 +2,20 @@ local api = vim.api
 local loop = vim.loop
 local cmd = "typos"
 
+local namespace = api.nvim_create_namespace("typos")
+
 local M = {}
 
 M.setup = function()
-    -- Create an augroup so we can remove the autocmd easily
+    local group = api.nvim_create_augroup("typos", {})
+
     api.nvim_create_autocmd(
-    { 'BufWritePost', 'BufEnter' },
-    { callback = M.typos })
+        { 'BufWritePost', 'BufEnter', 'InsertLeave' },
+        {
+            group = group,
+            callback = M.typos,
+        })
 end
-
-local namespace = api.nvim_create_namespace("typos")
-
 
 -- typo will contain a table that contains the following key/value
 -- pairs:
