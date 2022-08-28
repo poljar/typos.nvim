@@ -52,7 +52,7 @@ local function to_diagnostic(typo)
         lnum = typo['line_num'] - 1,
         col = typo['byte_offset'],
         severity = vim.diagnostic.severity.WARN,
-        message = 'typo: ' .. '`' .. typo["typo"] .. '`' .. "should be " .. corrections_string
+        message = 'typo: ' .. '`' .. typo["typo"] .. '`' .. " should be " .. corrections_string
     }
 end
 
