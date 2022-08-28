@@ -13,12 +13,6 @@ end
 
 local namespace = api.nvim_create_namespace("typos")
 
-local function get_file()
-    local buffer_number = api.nvim_get_current_buf()
-    local file_name = api.nvim_buf_get_name(buffer_number)
-
-    return buffer_number, file_name
-end
 
 -- typo will contain a table that contains the following key/value
 -- pairs:
@@ -109,22 +103,37 @@ local function read_output(buffer_number, cleanup)
     end
 end
 
+local function send_buffer_content_to_stdin(buffer_number, stdin)
+    local lines = vim.api.nvim_buf_get_lines(buffer_number, 0, -1, true)
+
+    for _, line in ipairs(lines) do
+        stdin:write(line .. '\n')
+    end
+
+    stdin:write('', function()
+        stdin:shutdown(function()
+            stdin:close()
+        end)
+    end)
+end
+
 M.typos = function()
     local stdout = loop.new_pipe(false)
+    local stdin = loop.new_pipe(false)
     local handle
     local pid_or_err
 
     local env = {}
     table.insert(env, "PATH=" .. os.getenv("PATH"))
 
-    local buffer_number, file_name = get_file()
+    local buffer_number = api.nvim_get_current_buf()
 
     local opts = {
         args = {
-            file_name,
+            "-",
             "--format=json",
         },
-        stdio = { nil, stdout, nil },
+        stdio = { stdin, stdout, nil },
         env = env,
         cwd = vim.fn.getcwd(),
         detached = false
@@ -140,6 +149,7 @@ M.typos = function()
 
     if not handle then
         stdout:close()
+        stdin:close()
         vim.notify('Error running ' .. cmd .. ': ' .. pid_or_err, vim.log.levels.ERROR)
         return
     end
@@ -150,6 +160,7 @@ M.typos = function()
     end
 
     stdout:read_start(read_output(buffer_number, cleanup))
+    send_buffer_content_to_stdin(buffer_number, stdin)
 end
 
 return M
