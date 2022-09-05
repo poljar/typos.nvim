@@ -1,3 +1,5 @@
+local utils = require("typos.utils")
+
 local api = vim.api
 local loop = vim.loop
 local cmd = "typos"
@@ -17,45 +19,7 @@ M.setup = function()
         })
 end
 
--- typo will contain a table that contains the following key/value
--- pairs:
---  * `type` - The type of the, will usually be "typo"
---  * `path` - The path of the file that contains the typo
---  * `line_num` - The line number where the typo can be found
---  * `byte_offset` - The offset from the line start where the typo can be found
---  * `typo` - The word that contains the typo
---  * `corrections` - A list of suggestinons that will fix the typo
---
---  Example:
---  ```json
---      {
---          "type": "typo",
---          "path": "/home/test/myfile.rs",
---          "line_num": 123,
---          "byte_offset": 14,
---          "typo": "refernce",
---          "corrections": ["reference"]
---      }
---  ```
-local function to_diagnostic(typo)
-    -- TODO handle the case of a typo in the filename
-    local corrections_string
-
-    if #typo["corrections"] == 1 then
-        corrections_string = '`' .. typo["corrections"][1] .. '`'
-    else
-        -- TODO handle the case of multiple corrections
-        corrections_string = typo["corrections"][1]
-    end
-
-    return {
-        lnum = typo['line_num'] - 1,
-        col = typo['byte_offset'],
-        severity = vim.diagnostic.severity.WARN,
-        message = 'typo: ' .. '`' .. typo["typo"] .. '`' .. " should be " .. corrections_string
-    }
-end
-
+-- Convert the output of our spawned task into diagnostic definitions.
 local function parse_output(chunks)
     -- The output is a list of chunks of the typos-cli stdout output, join them
     -- into a single string.
@@ -76,7 +40,7 @@ local function parse_output(chunks)
     local typos = vim.tbl_map(vim.json.decode, lines)
 
     -- Convert the typos JSON into a neovim diagnostic struct
-    return vim.tbl_map(to_diagnostic, typos)
+    return vim.tbl_map(utils.to_diagnostic, typos)
 end
 
 local function handle_output(buffer_number, chunks)
@@ -146,7 +110,7 @@ M.typos = function()
         handle:close()
 
         if code ~= 0 then
-            -- TODO this means we didn't find any typos
+            return
         end
     end)
 
