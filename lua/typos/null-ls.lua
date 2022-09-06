@@ -30,14 +30,14 @@ M.diagnostics = {
     method = null_ls.methods.DIAGNOSTICS,
     filetypes = {},
     generator = null_ls.generator({
-        command = "typos",
+        command = 'typos',
         args = {
-            "-",
-            "--format=json",
+            '-',
+            '--format=json',
         },
         to_stdin = true,
         ignore_stderr = true,
-        format = "json",
+        format = 'json',
         check_exit_code = check_exit_code,
         on_output = function(params)
             local diagnostics = {}
@@ -51,7 +51,7 @@ M.diagnostics = {
 }
 
 local function fix_typo_title(typo, correction)
-    return "Replace " .. typo.typo .. " with " .. correction
+    return 'Replace ' .. typo.typo .. ' with ' .. correction
 end
 
 local function fix_typo_action(buffer_number, typo, correction)
@@ -84,14 +84,14 @@ M.actions = {
     method = null_ls.methods.CODE_ACTION,
     filetypes = {},
     generator = null_ls.generator({
-        command = "typos",
+        command = 'typos',
         args = {
-            "-",
-            "--format=json",
+            '-',
+            '--format=json',
         },
         to_stdin = true,
         ignore_stderr = true,
-        format = "json",
+        format = 'json',
         check_exit_code = check_exit_code,
         on_output = function(params)
             local actions = {}

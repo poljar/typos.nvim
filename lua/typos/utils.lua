@@ -17,7 +17,7 @@ local function format_message(typo)
         corrections_string = typo.corrections[1]
     end
 
-    return 'typo: ' .. '`' .. typo.typo .. '`' .. " should be " .. corrections_string
+    return 'typo: ' .. '`' .. typo.typo .. '`' .. ' should be ' .. corrections_string
 end
 
 -- typo will contain a table that contains the following key/value
