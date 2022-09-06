@@ -61,7 +61,7 @@ end
 
 M.actions = {
     method = null_ls.methods.CODE_ACTION,
-    filetypes = { "help" },
+    filetypes = {},
     generator = null_ls.generator({
         command = "typos",
         args = {
