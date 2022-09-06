@@ -1,4 +1,9 @@
-local null_ls = require('null-ls')
+local ok, null_ls = pcall(require, 'null-ls')
+
+if not ok then
+    return {}
+end
+
 local utils = require('typos.utils')
 
 local M = {}
