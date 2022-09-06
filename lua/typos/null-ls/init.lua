@@ -27,7 +27,7 @@ local typos = {
         on_output = function(params)
             local diagnostics = {}
 
-            local diagnostic = utils.to_diagnostic(params.output)
+            local diagnostic = utils.to_null_ls(params.output)
             table.insert(diagnostics, diagnostic)
 
             return diagnostics

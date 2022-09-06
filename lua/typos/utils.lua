@@ -31,11 +31,21 @@ M.to_diagnostic = function(typo)
     end
 
     return {
-        row = typo['line_num'],
         lnum = typo['line_num'] - 1,
         col = typo['byte_offset'],
         severity = vim.diagnostic.severity.WARN,
         message = 'typo: ' .. '`' .. typo["typo"] .. '`' .. " should be " .. corrections_string
+    }
+end
+
+M.to_null_ls = function(typo)
+    local diagnostic = M.to_diagnostic(typo)
+
+    return {
+        row = diagnostic["lnum"] + 1,
+        col = diagnostic["col"] + 1,
+        severity = diagnostic["severity"],
+        message = diagnostic["message"],
     }
 end
 
