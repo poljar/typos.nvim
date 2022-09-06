@@ -30,18 +30,21 @@ end
 M.to_diagnostic = function(typo)
     local corrections_string
 
-    if #typo["corrections"] == 1 then
-        corrections_string = '`' .. typo["corrections"][1] .. '`'
+    if #typo.corrections == 1 then
+        corrections_string = '`' .. typo.corrections[1] .. '`'
     else
         -- TODO handle the case of multiple corrections
-        corrections_string = typo["corrections"][1]
+        corrections_string = typo.corrections[1]
     end
 
+    local start_column, end_column = M.get_typo_location(typo)
+
     return {
-        lnum = typo['line_num'] - 1,
-        col = typo['byte_offset'],
+        lnum = typo.line_num - 1,
+        col = start_column,
+        end_col = end_column,
         severity = vim.diagnostic.severity.WARN,
-        message = 'typo: ' .. '`' .. typo["typo"] .. '`' .. " should be " .. corrections_string
+        message = 'typo: ' .. '`' .. typo.typo .. '`' .. " should be " .. corrections_string
     }
 end
 
@@ -49,10 +52,11 @@ M.to_null_ls = function(typo)
     local diagnostic = M.to_diagnostic(typo)
 
     return {
-        row = diagnostic["lnum"] + 1,
-        col = diagnostic["col"] + 1,
-        severity = diagnostic["severity"],
-        message = diagnostic["message"],
+        row = diagnostic.lnum + 1,
+        col = diagnostic.col + 1,
+        end_col = diagnostic.end_col + 1,
+        severity = diagnostic.severity,
+        message = diagnostic.message,
     }
 end
 
