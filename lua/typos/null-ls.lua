@@ -14,6 +14,16 @@ local meta = {
     description = 'Code actions and diagnostics for typos',
 }
 
+local function check_exit_code(code, stderr)
+    local success = code >= 0
+
+    if not success then
+        print(stderr)
+    end
+
+    return success
+end
+
 M.diagnostics = {
     name = name,
     meta = meta,
@@ -28,15 +38,7 @@ M.diagnostics = {
         to_stdin = true,
         ignore_stderr = true,
         format = "json",
-        check_exit_code = function(code, stderr)
-            local success = code >= 0
-
-            if not success then
-                print(stderr)
-            end
-
-            return success
-        end,
+        check_exit_code = check_exit_code,
         on_output = function(params)
             local diagnostics = {}
 
@@ -47,6 +49,10 @@ M.diagnostics = {
         end
     }),
 }
+
+local function fix_typo_title(typo, correction)
+    return "Replace " .. typo.typo .. " with " .. correction
+end
 
 local function fix_typo_action(buffer_number, typo, correction)
     return function()
@@ -66,7 +72,7 @@ local function fix_typo_action(buffer_number, typo, correction)
     end
 end
 
-local function cursor_under_typo(params, typo)
+local function is_cursor_under_typo(params, typo)
     local start_column, end_column = utils.get_typo_location(typo)
     return params.row == typo.line_num and
         (params.col >= start_column and params.col < end_column)
@@ -86,22 +92,15 @@ M.actions = {
         to_stdin = true,
         ignore_stderr = true,
         format = "json",
-        check_exit_code = function(code, stderr)
-            local success = code >= 0
-
-            if not success then
-                print(stderr)
-            end
-            return success
-        end,
+        check_exit_code = check_exit_code,
         on_output = function(params)
             local actions = {}
             local typo = params.output
 
-            if cursor_under_typo(params, typo) then
+            if is_cursor_under_typo(params, typo) then
                 for _, correction in ipairs(typo.corrections) do
                     table.insert(actions, {
-                        title = "Replace " .. typo.typo .. " with " .. correction,
+                        title = fix_typo_title(typo, correction),
                         action = fix_typo_action(params.bufnr, typo, correction)
                     })
                 end
