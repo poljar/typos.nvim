@@ -1,9 +1,17 @@
-local null_ls = require("null-ls")
+local null_ls = require('null-ls')
 local utils = require('typos.utils')
 
 local M = {}
 
+local name = 'typos.nvim'
+local meta = {
+    url = 'https://github.com/poljar/typos.nvim',
+    description = 'Code actions and diagnostics for typos',
+}
+
 M.diagnostics = {
+    name = name,
+    meta = meta,
     method = null_ls.methods.DIAGNOSTICS,
     filetypes = {},
     generator = null_ls.generator({
@@ -60,6 +68,8 @@ local function cursor_under_typo(params, typo)
 end
 
 M.actions = {
+    name = name,
+    meta = meta,
     method = null_ls.methods.CODE_ACTION,
     filetypes = {},
     generator = null_ls.generator({
