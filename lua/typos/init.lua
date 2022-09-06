@@ -1,15 +1,15 @@
-local utils = require("typos.utils")
+local utils = require('typos.utils')
 
 local api = vim.api
 local loop = vim.loop
-local cmd = "typos"
+local cmd = 'typos'
 
-local namespace = api.nvim_create_namespace("typos")
+local namespace = api.nvim_create_namespace('typos')
 
 local M = {}
 
 M.setup = function()
-    local group = api.nvim_create_augroup("typos", {})
+    local group = api.nvim_create_augroup('typos', {})
 
     api.nvim_create_autocmd(
         { 'BufWritePost', 'BufEnter', 'InsertLeave' },
@@ -29,7 +29,7 @@ local function parse_output(chunks)
     -- at each newline.
     local lines = vim.split(
         output,
-        "\n",
+        '\n',
         {
             plain = true,
             trimempty = true
@@ -91,14 +91,14 @@ M.typos = function()
     local pid_or_err
 
     local env = {}
-    table.insert(env, "PATH=" .. os.getenv("PATH"))
+    table.insert(env, 'PATH=' .. os.getenv('PATH'))
 
     local buffer_number = api.nvim_get_current_buf()
 
     local opts = {
         args = {
-            "-",
-            "--format=json",
+            '-',
+            '--format=json',
         },
         stdio = { stdin, stdout, nil },
         env = env,
