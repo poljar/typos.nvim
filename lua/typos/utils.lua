@@ -1,5 +1,12 @@
 local M = {}
 
+M.get_typo_location = function(typo)
+    local start_column = typo.byte_offset
+    local end_column = start_column + string.len(typo.typo)
+
+    return start_column, end_column
+end
+
 -- typo will contain a table that contains the following key/value
 -- pairs:
 --  * `type` - The type of the, will usually be "typo"
