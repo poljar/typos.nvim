@@ -130,4 +130,7 @@ M.typos = function()
     send_buffer_content_to_stdin(buffer_number, stdin)
 end
 
+M.diagnostics = require('typos.null-ls').diagnostics
+M.actions = require('typos.null-ls').actions
+
 return M
