@@ -7,6 +7,19 @@ M.get_typo_location = function(typo)
     return start_column, end_column
 end
 
+local function format_message(typo)
+    local corrections_string
+
+    if #typo.corrections == 1 then
+        corrections_string = '`' .. typo.corrections[1] .. '`'
+    else
+        -- TODO handle the case of multiple corrections
+        corrections_string = typo.corrections[1]
+    end
+
+    return 'typo: ' .. '`' .. typo.typo .. '`' .. " should be " .. corrections_string
+end
+
 -- typo will contain a table that contains the following key/value
 -- pairs:
 --  * `type` - The type of the, will usually be "typo"
@@ -28,15 +41,7 @@ end
 --      }
 --  ```
 M.to_diagnostic = function(typo)
-    local corrections_string
-
-    if #typo.corrections == 1 then
-        corrections_string = '`' .. typo.corrections[1] .. '`'
-    else
-        -- TODO handle the case of multiple corrections
-        corrections_string = typo.corrections[1]
-    end
-
+    local message = format_message(typo)
     local start_column, end_column = M.get_typo_location(typo)
 
     return {
@@ -44,7 +49,7 @@ M.to_diagnostic = function(typo)
         col = start_column,
         end_col = end_column,
         severity = vim.diagnostic.severity.WARN,
-        message = 'typo: ' .. '`' .. typo.typo .. '`' .. " should be " .. corrections_string
+        message = message
     }
 end
 
