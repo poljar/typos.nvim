@@ -3,7 +3,7 @@ local utils = require('typos.utils')
 
 local M = {}
 
-local typos = {
+M.diagnostics = {
     method = null_ls.methods.DIAGNOSTICS,
     filetypes = {},
     generator = null_ls.generator({
@@ -35,6 +35,66 @@ local typos = {
     }),
 }
 
-M.diagnostic = typos
+local function fix_typo_action(buffer_number, typo, correction)
+    return function()
+        local lines = { correction }
+
+        local start_column = typo.byte_offset
+        local end_column = start_column + string.len(typo.typo)
+        local line_number = typo.line_num - 1
+
+        vim.api.nvim_buf_set_text(
+            buffer_number,
+            line_number,
+            start_column,
+            line_number,
+            end_column,
+            lines
+        )
+    end
+end
+
+local function cursor_under_typo(params, typo)
+    return params.row == typo["line_num"] and params.col == typo["byte_offset"]
+end
+
+M.actions = {
+    method = null_ls.methods.CODE_ACTION,
+    filetypes = { "help" },
+    generator = null_ls.generator({
+        command = "typos",
+        args = {
+            "-",
+            "--format=json",
+        },
+        to_stdin = true,
+        ignore_stderr = true,
+        format = "json",
+        check_exit_code = function(code, stderr)
+            local success = code >= 0
+
+            if not success then
+                print(stderr)
+            end
+            return success
+        end,
+        on_output = function(params)
+            local actions = {}
+            local typo = params.output
+
+            if cursor_under_typo(params, typo) then
+                for _, correction in ipairs(typo["corrections"]) do
+                    table.insert(actions, {
+                        title = "Replace " .. typo["typo"] .. " with " .. correction,
+                        action = fix_typo_action(params.bufnr, typo, correction)
+                    })
+                end
+            end
+
+            return actions
+
+        end
+    }),
+}
 
 return M
