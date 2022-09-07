@@ -25,20 +25,7 @@ local function parse_output(chunks)
     -- into a single string.
     local output = table.concat(chunks)
 
-    -- Each typo will be a json string delimited by a newline, split the string
-    -- at each newline.
-    local lines = vim.split(
-        output,
-        '\n',
-        {
-            plain = true,
-            trimempty = true
-        }
-    )
-
-    -- Parse each json string.
-    local typos = vim.tbl_map(vim.json.decode, lines)
-
+    local typos = utils.output_to_typos(output)
     -- Convert the typos JSON into a neovim diagnostic struct
     return vim.tbl_map(utils.to_diagnostic, typos)
 end

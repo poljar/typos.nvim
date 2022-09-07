@@ -20,6 +20,23 @@ local function format_message(typo)
     return 'typo: ' .. '`' .. typo.typo .. '`' .. ' should be ' .. corrections_string
 end
 
+-- Convert the output of the typos command into a parsed list of typo tables.
+M.output_to_typos = function(output)
+    -- Each typo will be a json string delimited by a newline, split the string
+    -- at each newline.
+    local lines = vim.split(
+        output,
+        '\n',
+        {
+            plain = true,
+            trimempty = true
+        }
+    )
+
+    -- Parse each json string.
+    return vim.tbl_map(vim.json.decode, lines)
+end
+
 -- typo will contain a table that contains the following key/value
 -- pairs:
 --  * `type` - The type of the, will usually be "typo"

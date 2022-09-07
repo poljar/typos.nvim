@@ -68,10 +68,15 @@ local function fix_typo_action(buffer_number, typo, correction)
     end
 end
 
-local function is_cursor_under_typo(params, typo)
-    local start_column, end_column = utils.get_typo_location(typo)
-    return params.row == typo.line_num and
-        (params.col >= start_column and params.col < end_column)
+-- Function to check if the given typo is the one that is under the
+-- cursor, if any.
+local is_cursor_under_typo = function(params)
+    return function(typo)
+        local start_column, end_column = utils.get_typo_location(typo)
+
+        return params.row == typo.line_num and
+            (params.col >= start_column and params.col < end_column)
+    end
 end
 
 M.actions = {
@@ -87,13 +92,15 @@ M.actions = {
         },
         to_stdin = true,
         ignore_stderr = true,
-        format = 'json',
+        format = 'raw',
         check_exit_code = check_exit_code,
-        on_output = function(params)
-            local actions = {}
-            local typo = params.output
+        on_output = function(params, done)
+            local typos = utils.output_to_typos(params.output)
+            local typos_under_cursor = vim.tbl_filter(is_cursor_under_typo(params), typos)
 
-            if is_cursor_under_typo(params, typo) then
+            local actions = {}
+
+            for _, typo in ipairs(typos_under_cursor) do
                 for _, correction in ipairs(typo.corrections) do
                     table.insert(actions, {
                         title = fix_typo_title(typo, correction),
@@ -102,8 +109,7 @@ M.actions = {
                 end
             end
 
-            return actions
-
+            return done(actions)
         end
     }),
 }
