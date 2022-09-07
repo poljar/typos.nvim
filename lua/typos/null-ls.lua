@@ -37,15 +37,11 @@ M.diagnostics = {
         },
         to_stdin = true,
         ignore_stderr = true,
-        format = 'json',
+        format = 'line',
         check_exit_code = check_exit_code,
-        on_output = function(params)
-            local diagnostics = {}
-
-            local diagnostic = utils.to_null_ls(params.output)
-            table.insert(diagnostics, diagnostic)
-
-            return diagnostics
+        on_output = function(line, _)
+            local json = vim.json.decode(line)
+            return utils.to_null_ls(json)
         end
     }),
 }
