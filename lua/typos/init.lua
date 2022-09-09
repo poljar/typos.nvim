@@ -30,9 +30,7 @@ local function parse_output(chunks)
     return vim.tbl_map(utils.to_diagnostic, typos)
 end
 
-local function handle_output(buffer_number, chunks)
-    local diagnostics = parse_output(chunks)
-
+local function handle_output(buffer_number, diagnostics)
     if api.nvim_buf_is_valid(buffer_number) then
         vim.diagnostic.set(namespace, buffer_number, diagnostics)
     end
@@ -50,8 +48,10 @@ local function read_output(buffer_number, cleanup)
         else
             cleanup()
 
+            local diagnostics = parse_output(chunks)
+
             vim.schedule(function()
-                handle_output(buffer_number, chunks)
+                handle_output(buffer_number, diagnostics)
             end)
         end
     end
