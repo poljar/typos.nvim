@@ -35,7 +35,7 @@ typos.nvim can also be configured to act as a diagnostics and code actions sourc
 for [null-ls].
 
 To activate the code actions, just add our actions source to the list of active
-sources in your null-ls setup function.
+sources in your null-ls setup function:
 
 ```lua
 require('null-ls').setup({
@@ -45,7 +45,7 @@ require('null-ls').setup({
 })
 ```
 
-The same can be done for the diagnostic source
+The same can be done for the diagnostic source:
 
 ```lua
 require('null-ls').setup({
