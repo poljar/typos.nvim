@@ -4,10 +4,12 @@ typos.nvim is a Neovim plugin that uses the [typos-cli] tool as a diagnostics
 source. It provides diagnostic warnings for typos in your codebase with a low
 false positive rate.
 
+<!-- panvimdoc-ignore-start -->
 ## Screenshot
 
 ![Showcase](https://user-images.githubusercontent.com/552026/189417359-343b831e-62ad-43c2-b098-9062c8f9b478.png)
 
+<!-- panvimdoc-ignore-end -->
 ## Prerequisites 
 
 - `neovim 0.7`

@@ -1,0 +1,74 @@
+*typos.nvim.txt*                                                           foo
+
+==============================================================================
+Table of Contents                               *typos.nvim-table-of-contents*
+
+1. typos.nvim                                          |typos.nvim-typos.nvim|
+  - Prerequisites                                   |typos.nvim-prerequisites|
+  - Installation                                     |typos.nvim-installation|
+  - Stand-alone setup                           |typos.nvim-stand-alone-setup|
+  - null-ls setup                                   |typos.nvim-null-ls-setup|
+
+==============================================================================
+1. typos.nvim                                          *typos.nvim-typos.nvim*
+
+typos.nvim is a Neovim plugin that uses the typos-cli
+<https://github.com/crate-ci/typos> tool as a diagnostics source. It provides
+diagnostic warnings for typos in your codebase with a low false positive rate.
+
+PREREQUISITES                                       *typos.nvim-prerequisites*
+
+
+- `neovim 0.7`
+- `null-ls` (optional, for code actions)
+
+
+INSTALLATION                                         *typos.nvim-installation*
+
+using `packer.nvim`:
+
+>
+    use 'poljar/typos.nvim'
+<
+
+
+STAND-ALONE SETUP                               *typos.nvim-stand-alone-setup*
+
+typos.nvim can be set up without additional requirements to act as a
+diagnostics source:
+
+>
+    require('typos').setup()
+<
+
+
+NULL-LS SETUP                                       *typos.nvim-null-ls-setup*
+
+typos.nvim can also be configured to act as a diagnostics and code actions
+source for null-ls <https://github.com/jose-elias-alvarez/null-ls.nvim>.
+
+To activate the code actions, just add our actions source to the list of active
+sources in your null-ls setup function:
+
+>
+    require('null-ls').setup({
+        sources = {
+            require('typos').actions,
+        },
+    })
+<
+
+
+The same can be done for the diagnostic source:
+
+>
+    require('null-ls').setup({
+        sources = {
+            require('typos').actions,
+            require('typos').diagnostics,
+        },
+    })
+<
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:
